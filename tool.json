@@ -1,16 +1,47 @@
 {
-  "id": "coolcode-tool-template",
-  "title": "CoolCode Tool Starter",
-  "description": "A browser-only example that trims lines and removes exact duplicates.",
-  "category": "security",
-  "tags": ["text", "lines", "duplicates"],
-  "icon": "scan-search",
-  "url": "/coolcode-tool-template/",
-  "source": "https://github.com/jsdyer/coolcode-tool-template",
+  "id": "spillledger",
+  "title": "Spill Ledger",
+  "description": "Follow marine pollution incidents in BC and Nova Scotia through claims, offers and recoveries.",
+  "category": "disclosures",
+  "tags": [
+    "coast",
+    "claims",
+    "Bridgewater",
+    "oil",
+    "harbours",
+    "Nova Scotia",
+    "British Columbia"
+  ],
+  "icon": "file-check-2",
+  "url": "/spillledger/",
+  "source": "https://github.com/jsdyer/spillledger",
   "hosting": "project",
   "access": "browser",
   "data_info": {
-    "mode": "local",
-    "detail": "The browser reads the text you paste and compares its lines."
+    "mode": "snapshot",
+    "detail": "A federal compensation fund’s 2023–24 report lists incidents and financial decisions, including preventive responses and cases with several claimants.",
+    "cadence": "Monthly",
+    "probes": [
+      {
+        "label": "Data retrieved",
+        "url": "https://coolcode.ca/spillledger/data/edition.json",
+        "path": [
+          "retrieved"
+        ],
+        "count_at": {
+          "path": [
+            "count"
+          ],
+          "unit": "incidents"
+        }
+      },
+      {
+        "label": "Report fiscal year ending",
+        "url": "https://coolcode.ca/spillledger/data/edition.json",
+        "path": [
+          "start"
+        ]
+      }
+    ]
   }
 }
