@@ -1,7 +1,18 @@
-// Keep transformations separate from the DOM so they can be tested directly.
-export function cleanLines(text) {
-  if (typeof text !== 'string') throw new TypeError('Expected text');
-  const lines = text.split(/\r\n|\r|\n/).map(line => line.trim()).filter(Boolean);
-  const unique = [...new Set(lines)];
-  return { text: unique.join('\n'), count: unique.length, removed: lines.length - unique.length };
+export function selectedRecords(records, query, province, status) {
+  const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  return records.filter(
+    (r) =>
+      (province === "all" || province === r.province) &&
+      (status === "all" || r.claims.some((c) => c.status === status)) &&
+      words.every((w) =>
+        [r.name, r.date, r.province, ...r.description]
+          .join(" ")
+          .toLowerCase()
+          .includes(w),
+      ),
+  );
+}
+export function joined(lines) {
+  const text = (lines || []).join(" ");
+  return !text || text === "-" ? "No entry published" : text;
 }
