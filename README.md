@@ -7,8 +7,12 @@ Search the federal ship-source pollution compensation report by vessel, harbour,
 ## Try it
 
 <!-- coolcode:guide -->
-The June 2015 Farley Mowat incident in Shelburne has separate claims by the town and the Canadian Coast Guard. Select the incident to compare the amounts submitted and offered, alongside the shared recovery entry.
+The June 2015 Farley Mowat incident in Shelburne has separate claims by the town and the Canadian Coast Guard. Open its incident record to compare each claimant’s submission and offer alongside the shared recovery entry. Browse the other multi-claimant incidents or compare recoveries across cases.
 <!-- /coolcode:guide -->
+
+## Browse the records
+
+The [incident directory](https://coolcode.ca/spillledger/records/) includes the full saved edition, links by the province section in the report, repeated reported locations and financial stage. Incident pages show the original PDF page for each claim and the incident-wide recovery. Records without a financial entry remain in the directory, including the report’s description, status, PDF page and exact explorer selection. The named Europe incident also links to a navigation aid in the same bay. Individual pages and comparison lists are generated during each build.
 
 ## Sources and interpretation
 
@@ -20,7 +24,7 @@ The importer reads the table geometry on PDF pages 63–76. It preserves multi-c
 
 ## Refresh and verification
 
-Monthly. Install the pinned PDF-table reader with `python3 -m pip install -r scripts/requirements.txt` for extraction. The retrieval date records the last successful source check in UTC. The coverage on the homepage and in the tool describes the underlying records. A changed archive requiring review or a failed download leaves the previous edition available. The scheduled workflow validates the data, runs the tests and publishes the resulting snapshot. For a manual refresh, run `python3 scripts/refresh.py`.
+The archive is checked on the fourth of each month at 10:41 UTC. The collector checks the reviewed report file by checksum. A new fiscal report requires a reviewed source and extractor update. Install the pinned PDF-table reader with `python3 -m pip install -r scripts/requirements.txt` for extraction. The retrieval date records the last successful source check in UTC. The coverage on the homepage and in the tool describes the underlying records. A changed archive requiring review or a failed download leaves the previous edition available. The scheduled workflow validates the data, runs the tests and publishes the resulting snapshot. For a manual refresh, run `python3 scripts/refresh.py`.
 
 The interface, selections and CSV exports run locally in the browser. Visiting a source or map link opens the publisher’s site. The offline build uses the checked-in edition. To build and preview it, run the following commands.
 

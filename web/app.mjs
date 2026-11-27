@@ -14,8 +14,7 @@ try {
     records = data.records;
   choices("province", [
     ["all", "Both provinces"],
-    ["Nova Scotia", "Nova Scotia"],
-    ["British Columbia", "British Columbia"],
+    ...[...new Set(records.map((r) => r.province))].sort().map((p) => [p, p]),
   ]);
   const states = [
     ...new Set(records.flatMap((r) => r.claims.map((c) => c.status))),
@@ -27,10 +26,16 @@ try {
   const lookup = new Map(records.map((r, i) => [r, String(i)]));
   const label = (r) => r.name + " · " + r.place + " · " + r.date;
   let csv = [];
-  function render() {
+  function render(syncAddress = false) {
     const selected = byId("incident").value,
       r = selected === "" ? null : records[Number(selected)];
     byId("detail").hidden = !r;
+    if (syncAddress) {
+      const url = new URL(location.href);
+      if (r) url.searchParams.set("incident", r.key);
+      else url.searchParams.delete("incident");
+      history.replaceState(null, "", url);
+    }
     if (!r) return;
     byId("name").textContent = r.name + " · " + r.place;
     byId("description").textContent = [
@@ -66,6 +71,10 @@ try {
         data.source + "#page=" + r.page,
       ),
     );
+    const saved = r.has_profile
+      ? sourceLink("Read the incident record and compare related cases", "./records/incidents/" + r.key + "/")
+      : sourceLink("Find this entry in the incident directory", "./records/#" + r.key);
+    byId("saved-record").replaceChildren(saved);
     csv = [
       [
         "incident",
@@ -93,7 +102,7 @@ try {
       ]),
     );
   }
-  function filter(preferred = byId("incident").value) {
+  function filter(preferred = byId("incident").value, syncAddress = true) {
     const found = selectedRecords(
       records,
       byId("search").value,
@@ -109,17 +118,18 @@ try {
     byId("matchcount").textContent = found.length
       ? number(found.length) + " of " + records.length + " incidents"
       : "No matching incidents. Try another harbour, name or status.";
-    render();
+    render(syncAddress);
   }
-  byId("incident").onchange = render;
+  byId("incident").onchange = () => render(true);
   byId("search").oninput = () => filter();
   for (const id of ["province", "state"]) byId(id).onchange = () => filter();
   byId("csv").onclick = () => downloadCsv("marine-incident.csv", csv);
-  filter(
-    lookup.get(
-      records.find((r) => r.name === "Cormorant" && r.date.startsWith("2015")),
-    ),
-  );
+  const requested = new URL(location.href).searchParams.get("incident");
+  const initial = records.find((r) => r.key === requested)
+    ?? records.find((r) => r.key === byId("finder").dataset.example);
+  filter(lookup.get(initial), false);
+  if (requested && location.hash === "#detail" && initial?.key === requested)
+    byId("detail").scrollIntoView();
 } catch {
   failed();
 }

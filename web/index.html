@@ -9,26 +9,27 @@
     <script type="module" src="./app.mjs"></script>
   <script defer src="/assets/tool-metrics.js" referrerpolicy="no-referrer"></script>
 <link rel="canonical" href="https://coolcode.ca/spillledger/">
+<script type="application/ld+json">{{DATASET}}</script>
 </head>
   <body>
     <header>
       <div class="wrap">
         <nav>
           <a href="https://coolcode.ca/">CoolCode.ca</a
-          ><a href="#sources">Sources &amp; method</a>
+          ><a href="./records/">Browse incident records</a><a href="#sources">Sources &amp; method</a>
         </nav>
         <div class="mast">
           <h1>{{TITLE}}</h1>
           <p>
-            Follow the public record of a marine pollution incident from the
-            first claim through the fund’s decision and any reported recovery.
+            Find a vessel or harbour to see who claimed costs, what the fund offered and what it recovered.
           </p>
+          {{EXAMPLE}}
         </div>
       </div>
     </header>
     <main class="wrap">
-      <p id="edition" role="status">Loading the published records…</p>
-      <section>
+      <p id="edition" role="status">{{EDITION}}</p>
+      <section id="finder" data-example="{{EXAMPLE_KEY}}">
         <h2>Find an incident</h2>
         <div class="controls">
           <label class="wide"
@@ -45,20 +46,19 @@
           ></label>
         </div>
         <p id="matchcount" class="hint" role="status"></p>
-        <div id="detail">
+        <div id="detail" hidden>
           <h2 id="name"></h2>
           <p id="description"></p>
           <div id="claims"></div>
           <h3>Recovery reported</h3>
           <p id="recovery"></p>
-          <p id="original"></p>
+          <p id="original"></p><p id="saved-record"></p>
           <button type="button" id="csv">Download this incident</button>
         </div>
       </section>
       <noscript
         ><p>
-          Enable JavaScript to explore the records. The sources and full guide
-          are available below.
+          <a href="./records/">Browse the complete incident records</a> by vessel, place or financial stage.
         </p></noscript
       >
     </main>
@@ -79,6 +79,7 @@
       </p>
       <p>
         <a href="{{SOURCE_URL}}#readme">Read the full guide and data notes</a>
+        · <a href="./data/edition.json" download>Download the incident data (JSON)</a>
       </p>
      <a href="https://coolcode.ca/report/?tool=spillledger" referrerpolicy="no-referrer">Report an issue</a></footer>
   </body>

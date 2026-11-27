@@ -49,6 +49,25 @@ def main():
                 page.set_viewport_size({"width": 390, "height": 844})
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
                 page.screenshot(path=str(screenshots / "mobile.png"), full_page=True)
+                # The saved case and its native explorer restore the same incident.
+                page.locator("#saved-record a").click()
+                assert "farley-mowat-2015-06-24-shelburne-nova-scotia/" in page.url
+                assert "Town of Shelburne" in page.locator("main").inner_text()
+                page.get_by_role("link", name="Open this incident in the explorer", exact=True).first.click()
+                page.wait_for_function("document.querySelector('#name').textContent.includes('Farley Mowat')")
+                assert "Farley Mowat" in page.locator("#incident option:checked").inner_text()
+                assert page.locator("#claims .claim").count() == 2
+                for width in (390, 1280):
+                    native = browser.new_context(java_script_enabled=False, viewport={"width": width, "height": 844})
+                    saved = native.new_page()
+                    base = f"http://127.0.0.1:{server.server_port}/spillledger/"
+                    saved.goto(base)
+                    saved.get_by_role("link", name="Browse incident records", exact=True).click()
+                    saved.get_by_role("link", name="Amounts recovered", exact=True).click()
+                    saved.get_by_role("link", name="Cormorant · Bridgewater · 2015-02-27", exact=True).click()
+                    assert "$375,000.00 recovered on 2022-01-06" in saved.locator("main").inner_text()
+                    assert saved.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+                    native.close()
                 assert not errors, errors
                 browser.close()
             print("Browser checks passed: source records, filters, CSV download and mobile layout")

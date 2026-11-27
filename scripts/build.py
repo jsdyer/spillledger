@@ -7,6 +7,7 @@ import re
 import shutil
 import tempfile
 from urllib.parse import urlsplit
+from result_pages import write_results, profile_path, summary
 
 ROOT = Path(__file__).resolve().parents[1]
 SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
@@ -14,10 +15,10 @@ SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 
 def metadata(root=ROOT):
     tool = json.loads((root / "tool.json").read_text(encoding="utf-8"))
-    required = {"id", "title", "description", "category", "tags", "icon", "url", "source", "hosting", "access", "data_info"}
+    required = {"id", "title", "description", "category", "tags", "icon", "url", "source", "hosting", "access", "data_info", "result_directory", "dataset"}
     if not isinstance(tool, dict) or set(tool) != required:
         raise ValueError("tool.json has missing or unknown fields")
-    for key in required - {"tags", "data_info"}:
+    for key in required - {"tags", "data_info", "result_directory", "dataset"}:
         if not isinstance(tool[key], str) or not tool[key].strip():
             raise ValueError(f"tool.json: {key} must be a nonempty string")
     if not SLUG.fullmatch(tool["id"]) or tool["url"] != f'/{tool["id"]}/' or tool["hosting"] != "project":
@@ -26,6 +27,12 @@ def metadata(root=ROOT):
         raise ValueError("tags must be an array of nonempty strings")
     if tool["access"] != "browser":
         raise ValueError("This starter produces an immediately usable browser tool; use access: browser")
+    directory = tool["result_directory"]
+    if not isinstance(directory, dict) or directory.get("path") != "records/" or not directory.get("title"):
+        raise ValueError("Provide the name of the records/ result directory")
+    dataset = tool["dataset"]
+    if not isinstance(dataset, dict) or dataset.get("file") != "data/edition.json" or dataset.get("format") != "JSON" or not dataset.get("title"):
+        raise ValueError("Register the published JSON incident edition")
     info = tool["data_info"]
     if (not isinstance(info, dict) or info.get("mode") not in ("snapshot", "live", "local", "reference", "mixed")
             or not isinstance(info.get("detail"), str) or not info["detail"].strip()):
@@ -53,6 +60,20 @@ def build(root=ROOT):
         shutil.copytree(web, stage)
         index = stage / "index.html"
         page = index.read_text(encoding="utf-8")
+        edition = json.loads((stage / "data/edition.json").read_text(encoding="utf-8"))
+        example = write_results(stage, tool, edition)
+        base = "https://coolcode.ca" + tool["url"]
+        dataset = {"@context": "https://schema.org", "@type": "Dataset", "name": tool["dataset"]["title"],
+                   "description": tool["data_info"]["detail"], "url": base, "isBasedOn": edition["source"],
+                   "distribution": {"@type": "DataDownload", "encodingFormat": "application/json",
+                                    "contentUrl": base + tool["dataset"]["file"]}}
+        page = page.replace("{{DATASET}}", json.dumps(dataset, ensure_ascii=False).replace("<", "\\u003c"))
+        sample = ""
+        if example:
+            name = escape(example["name"] + " at " + example["place"])
+            sample = f'<p id="first-example"><a href="./{profile_path(example)}">{name}</a> · {escape(summary(example))}</p>'
+        page = page.replace("{{EXAMPLE}}", sample).replace("{{EXAMPLE_KEY}}", example["key"] if example else "")
+        page = page.replace("{{EDITION}}", escape(f'{edition["count"]} incidents · {edition["coverage"]} · Source checked {edition["retrieved"]} UTC'))
         for token, key in {"TITLE": "title", "DESCRIPTION": "description", "TOOL_ID": "id", "SOURCE_URL": "source"}.items():
             placeholder = "{{" + token + "}}"
             if placeholder not in page:

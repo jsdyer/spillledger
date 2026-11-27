@@ -17,6 +17,15 @@
   "source": "https://github.com/jsdyer/spillledger",
   "hosting": "project",
   "access": "browser",
+  "result_directory": {
+    "path": "records/",
+    "title": "Marine pollution claims by incident, place and financial stage"
+  },
+  "dataset": {
+    "title": "BC and Nova Scotia marine pollution claims in the 2023–24 report",
+    "file": "data/edition.json",
+    "format": "JSON"
+  },
   "data_info": {
     "mode": "snapshot",
     "detail": "A federal compensation fund’s 2023–24 report lists incidents and financial decisions, including preventive responses and cases with several claimants.",

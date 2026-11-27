@@ -276,3 +276,24 @@ ul.sources li {
 .claim dd {
   margin: 0;
 }
+nav { flex-wrap: wrap; }
+.mast { padding-block: clamp(1rem, 3vw, 2.4rem); }
+.mast #first-example { margin-top: .7rem; font-size: 1rem; }
+#detail { scroll-margin-top: .75rem; }
+.skip { position: absolute; top: -8rem; padding: .6rem; background: white; }
+.skip:focus { top: 0; }
+.record { padding-block: .75rem; }
+.record h1, .record strong, .claim dd, .case-list li { overflow-wrap: anywhere; }
+.claim + .claim { margin-top: .8rem; }
+.case-list, .group-list { padding: 0; list-style: none; }
+.case-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: 1rem 1.5rem; }
+.case-list li { padding: .7rem 0; border-top: 1px solid #b3c7c6; }
+.case-list p { margin: .25rem 0; }
+.group-list { display: flex; flex-wrap: wrap; gap: .5rem .85rem; }
+.group-list li { padding: .4rem .65rem; background: var(--wash); }
+.group-list span { margin-left: .3rem; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) {
+  nav { gap: .35rem .7rem; }
+  .mast h1 { font-size: clamp(1.95rem, 8vw, 3.1rem); overflow-wrap: anywhere; }
+  .claim dl { grid-template-columns: minmax(6rem, 36%) minmax(0, 1fr); }
+}
